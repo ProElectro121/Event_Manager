@@ -1,0 +1,12 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.wrapper {
+    background-color: #000000;
+}
+
+.main {
+    background-color: linear-gradient(to bottom, #808080, #000000);
+}

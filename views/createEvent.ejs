@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Event</title>
+    <style>
+        /* CSS styles */
+
+        #event-form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            display: flex;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 20px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        form {
+
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            /* Center the form */
+            margin-bottom: 20px;
+            width: 400px;
+            /* Add margin to separate from event cards */
+        }
+
+        .label {
+            text-align: left;
+            /* Align input field names to the left */
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="time"] {
+            width: calc(100% - 20px);
+            /* Adjust input width */
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        #event-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            /* Center the event cards */
+        }
+
+        .event-card {
+            background-color: #fff;
+            padding: 20px;
+            margin: 10px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 300px;
+            /* Limit the width of event cards */
+            flex: 1;
+            /* Allow event cards to grow and shrink */
+        }
+
+        .edit-button,
+        .delete-button {
+            display: block;
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #dc3545;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .edit-button:hover,
+        .delete-button:hover {
+            background-color: #bb2d3b;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="event-form">
+        <h2>Create Event</h2>
+        <form id="create-event-form" action="/admin/newEvent" , method="POST">
+            <label for="event-name">Name:</label>
+            <input type="text" id="event-name" name="title" required><br>
+            <label for="event-place">Place:</label>
+            <input type="text" id="event-place" name="place" required><br>
+            <label for="event-date">Date:</label>
+            <input type="date" id="event-date" name="curdate" required><br>
+            <label for="event-time">Time:</label>
+            <input type="time" id="event-time" name="curtime" required><br>
+            <button type="submit">Create Event</button>
+        </form>
+    </div>
+    <div id="event-list">
+        <% arr.forEach(function(event) { %>
+            <div class="event-card">
+                <h2>
+                    <%= event.name %>
+                </h2>
+                <!-- Event details -->
+                <p><strong>Place:</strong>
+                    <%= event.place %>
+                </p>
+                <p><strong>Date:</strong>
+                    <%= event.date %>
+                </p>
+                <p><strong>Time:</strong>
+                    <%= event.time %>
+                </p>
+                <!-- Buttons for editing and deleting events -->
+                <button class="edit-button" data-id=<%=event._id %>>Edit</button>
+                <button class="delete-button" data-id=<%=event._id %>>Delete</button>
+            </div>
+            <% }); %>
+    </div>
+
+    <script>
+        // Add event listener for edit and delete buttons
+        document.getElementById('event-list').addEventListener('click', function (event) {
+            const target = event.target;
+
+            if (target.classList.contains('edit-button')) {
+                const eventId = target.getAttribute('data-id');
+                const eventCard = target.closest('.event-card');
+                const eventName = eventCard.querySelector('h2').textContent;
+                const eventPlace = eventCard.querySelector('p:nth-of-type(2)').textContent.split(': ')[1];
+                const eventDate = eventCard.querySelector('p:nth-of-type(3)').textContent.split(': ')[1];
+                const eventTime = eventCard.querySelector('p:nth-of-type(4)').textContent.split(': ')[1];
+
+                // Now you have the values of the event details, you can use them for editing.
+                // Example: Populate input fields with event details
+                const eventNameInput = document.getElementById('event-name');
+                const eventPlaceInput = document.getElementById('event-place');
+                const eventDateInput = document.getElementById('event-date');
+                const eventTimeInput = document.getElementById('event-time');
+
+                eventNameInput.value = eventName;
+                eventPlaceInput.value = eventPlace;
+                eventDateInput.value = eventDate;
+                eventTimeInput.value = eventTime;
+
+                // Change edit button text to "Save"
+                target.textContent = 'Save';
+                target.classList.add('save-button');
+                target.classList.remove('edit-button');
+            } else if (target.classList.contains('save-button')) {
+                // Handle save button click
+                const eventCard = target.closest('.event-card');
+                const eventNameInput = eventCard.querySelector('.event-name').value;
+                const eventPlaceInput = eventCard.querySelector('.event-detail:nth-of-type(2)').value;
+                const eventDateInput = eventCard.querySelector('.event-detail:nth-of-type(3)').value;
+                const eventTimeInput = eventCard.querySelector('.event-detail:nth-of-type(4)').value;
+
+                // Now you have the updated values from the input fields, you can use them for saving changes.
+                // Example: Update event details on the event card
+                eventCard.querySelector('h2').textContent = eventNameInput;
+                eventCard.querySelector('p:nth-of-type(2)').textContent = 'Place: ' + eventPlaceInput;
+                eventCard.querySelector('p:nth-of-type(3)').textContent = 'Date: ' + eventDateInput;
+                eventCard.querySelector('p:nth-of-type(4)').textContent = 'Time: ' + eventTimeInput;
+
+                // Change save button text back to "Edit"
+                target.textContent = 'Edit';
+                target.classList.add('edit-button');
+                target.classList.remove('save-button');
+            }
+        });
+
+
+        document.querySelectorAll('.delete-button').forEach(button => {
+            console.log('sdfdsa');
+            button.addEventListener('click', () => {
+                const eventId = button.getAttribute('data-id');
+                console.log(eventId);
+                // Send a delete request to the server using AJAX
+                fetch('/admin/deleteEvent', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ eventId: eventId })
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            // Optionally, update the UI to remove the deleted event
+                            button.closest('.event-card').remove();
+                        } else {
+                            console.error('Error deleting event');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error deleting event:', error);
+                    });
+            });
+        });
+    </script>
+</body>
+
+</html>
